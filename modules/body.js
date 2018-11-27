@@ -76,7 +76,7 @@ function fileExtract(storage, unknownFile , unknownFileSize, unknownFileStart){
 						var buffer = new Buffer(last);
 						fs.readSync(storage, buffer, 0, buffer.length, next+32);
 						fs.writeSync(unknownFile, buffer, 0, buffer.length, index*(BDB-32));
-
+						resolve(1);
 
 						
 					}
@@ -90,9 +90,6 @@ function fileExtract(storage, unknownFile , unknownFileSize, unknownFileStart){
 	
 						next = file.buff2Hexa(buffreverse(buff.slice(16,32)));
 
-						console.log(buffer);
-						console.log(count);
-						console.log(last);
 
 					}					
 
