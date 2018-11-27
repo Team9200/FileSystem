@@ -126,7 +126,7 @@ function start(){
 
 	var storageMonitor = new dirwatch.DirectoryWatcher("storage", true);
 
-	storageMonitor.start(3000);
+	storageMonitor.start(50);
 
 	storageMonitor.on("fileAdded", function (fileDetail) {			// file add
 	  	
