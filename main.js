@@ -3,9 +3,7 @@ const uuid= require('uuid');
 const buffreverse = require('buffer-reverse/inplace');
 const sha256File = require('sha256-file');
 const md5File = require('md5-file');
-const DirectoryWatcher = require('directory-watcher');
-
-
+const chokidar = require ('chokidar');
 
 const bit = require('./modules/bit-vector');
 const normalHeader = require('./modules/normalHeader');
@@ -116,6 +114,7 @@ async function extract(){
 	console.log("extracting...");
 
 	await body.extract(storage,unknownFile ,header.size, header.start);			// 추출.
+	console.log(1);
 	await fs.closeSync(storage);
 	await fs.closeSync(unknownFile);
 
@@ -124,30 +123,43 @@ async function extract(){
 }
 function start(){
 
-	var storageMonitor = new dirwatch.DirectoryWatcher("storage", true);
+watcher = chokidar.watch('./storage', {persistent: true})
 
-	storageMonitor.start(50);
+ watcher
+    .on('add', function(path, stats) 
+        { 
+		 	console.log('add',path);
 
-	storageMonitor.on("fileAdded", function (fileDetail) {			// file add
-	  	
-	  	console.log("File Added: " + fileDetail.fullPath.split("\\")[1]);
-	  	var file =fileDetail.fullPath.split("\\")[1];
-	  	
-	  	if(file == "give"){
+			var file =path.split("\\")[1];
+		  	
+		  	if(file == "give"){
 
-	  		extract();
-	  		fs.unlinkSync(fileDetail.fullPath);
-	  	}
+		  		extract();
+		  		fs.unlinkSync(path);
+		  	}
 
-	  	else
-	  		recive(fileDetail.fullPath);
+		  	else
+		  		recive(path);
+	        })
 
-	});
+    .on('change', function(path, stats) 
+        { 
+		 	console.log('change');
+        })
+    .on('unlink', function(path, stats) 
+		{
+		 	console.log('delete.');
+        })
+    .on('error', function(error) 
+        { 
+         console.log('chokidar watch error occurred ' + error);
+        })
+    .on('ready', function() 
+        { 
+            console.log('Initial scan complete. Ready for changes.');
+        })
 
-	// Let us know that directory monitoring is happening and where.
 	console.log("Directory Monitoring of " + storageMonitor.root + " has started");
-
-
 
 
 }
