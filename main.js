@@ -159,8 +159,13 @@ watcher = chokidar.watch('./storage', {persistent: true})
             console.log('Initial scan complete. Ready for changes.');
         })
 
-	console.log("Directory Monitoring of " + storageMonitor.root + " has started");
+	console.log("Directory Monitoring of storage has started");
 
 
 }
 start();
+module.exports = {
+
+	start : start
+
+};
