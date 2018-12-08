@@ -27,10 +27,13 @@ async function headerJson(){
 	usedHeader.forEach(async function(freeSpace,index){
 
 		var header = await normalHeader.parse(storage , storageSize, headerStart, freeSpace);
-		result[index] = header
+		console.log(header.sha256);
+		result[index] = header.sha256;
 	});
 
+
 	var f= await fs.openSync('header.json',"w+");
+	result =  result.sort()
 	console.log(result);
 	fs.writeSync(f, JSON.stringify(result));
 
