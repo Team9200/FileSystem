@@ -24,6 +24,32 @@ function parseHeader(storage , storageSize, start, offset){				// Get file handl
 	});
 
 }
+function search(storage, start, map, hash){
+
+	return new Promise(function(resolve, reject){
+
+		var buffer = new Buffer(NHB);
+		var header = new Object();
+		var find = 0;
+		// fs.readSync(storage, buffer, 0, buffer.length, start+(NHB*offset));
+
+		map.forEach(function(offset, index) {
+
+			fs.readSync(storage, buffer, 0, buffer.length, start+(NHB*offset));
+			var tmpHash = buffer.slice(96,128).toString('hex');
+			if(tmpHash === hash){
+
+				resolve(index);
+				find = 1;
+			}
+		});
+		if(find != 1){
+
+			resolve(-1);
+
+		}
+	});
+}
 
 function createHeaderBuffer(collector, filename, filesize, startOffset, date){			// Get 분석여부, File Name, Start offset / return header buffer
 
@@ -68,6 +94,7 @@ module.exports = {
 
 	parse : parseHeader,
 	create : createHeaderBuffer,
-	set : writeHeader
+	set : writeHeader,
+	search : search
 
 };
