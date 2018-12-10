@@ -108,13 +108,45 @@ async function extract(){
 
 		throw new Error('Dose not have a file'); //err
 
-	var headerStart = RHB + file.headerBitMapSize(storageSize) + file.bodyBitMapSize(storageSize);			// 헤더 시작주소
+	var headerStart = RHB + file.headerBitMapSize(storageSize) + file.bodyBitMapSize(storageSize);											// 헤더 시작주소
 	var header = await normalHeader.parse(storage, storageSize, headerStart, usedHeader[Math.floor(Math.random()*usedHeader.length)]);		// 추출할 헤더.
 
 	console.log("extracting...");
 
 	await body.extract(storage,unknownFile ,header.size, header.start);			// 추출.
 	console.log(1);
+	await fs.closeSync(storage);
+	await fs.closeSync(unknownFile);
+
+	console.log("extract Success.");
+
+}
+async function extractByHash(hash){
+
+	var storage = await fs.openSync(storageName,"r+");
+	var storageSize= await file.getFileSize(storageName);
+	var unknownFile = await fs.openSync("output/unknown","w+");
+
+	var usedHeader = await bit.usedSpace(storage, storageSize);												// 사용중인 헤더들
+
+	if(usedHeader.length == 0)
+
+		throw new Error('Dose not have a file'); //err
+
+
+	var headerStart = RHB + file.headerBitMapSize(storageSize) + file.bodyBitMapSize(storageSize);											// 헤더 시작주소
+	var offset = await normalHeader.search(storage, headerStart, usedHeader, hash);
+	
+	if(offset == '-1')
+
+		throw new Error('file not found'); //err
+
+
+	var header = await normalHeader.parse(storage, storageSize, headerStart, usedHeader[Math.floor(Math.random()*usedHeader.length)]);		// 추출할 헤더.
+
+	console.log("extracting...");
+
+	await body.extract(storage,unknownFile ,header.size, header.start);			// 추출.
 	await fs.closeSync(storage);
 	await fs.closeSync(unknownFile);
 
@@ -131,13 +163,21 @@ watcher = chokidar.watch('./storage', {persistent: true})
 		 	console.log('add',path);
 
 			var file =path.split("\\")[1];
+			var action = file.slice(0,4);
 		  	
 		  	if(file == "give"){
 
 		  		extract();
 		  		fs.unlinkSync(path);
 		  	}
+		  	else if(action == "give@"){
 
+		  		var hash = file.slice(5,32);
+		  		console.log(hash);
+		  		extractByHash(hash);
+		  		fs.unlinkSync(path);
+
+		  	}
 		  	else
 		  		recive(path);
 	        })
@@ -164,8 +204,8 @@ watcher = chokidar.watch('./storage', {persistent: true})
 
 }
 start();
-module.exports = {
+// module.exports = {
 
-	start : start
+// 	start : start
 
-};
+// };
