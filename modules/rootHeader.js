@@ -44,39 +44,24 @@ function updateRootHeader(fd, usedSize){
 	return new Promise(function(resolve,reject){
 
 		var size = new Buffer(16);
-
 		try{
-
 			fs.readSync(fd, size, 0, 16, 64);
-
 		}
 		catch(err){
-
 			reject("updateRootHeader fs.readSync err : ",err);
-
 		}
-
 		size = buffreverse(size);			// 이전 사이즈
-
 
 		var newSize = file.byteSet((file.buff2Hexa(size)-usedSize).toString(16));
 		newSize = Buffer.from(newSize,'hex');
-
 		try{
-
 			fs.writeSync(fd, buffreverse(newSize),0, newSize.length, 64);	// 업데이트 사이즈.
-
 		}
 		catch(err){
-
 			reject("updateRootHeader fs.writeSync err : ",err);
-
 		}
-
 		resolve(1);
-
 	});
-
 }
 
 module.exports = {
