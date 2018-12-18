@@ -8,7 +8,6 @@ function fileCopy(srcfd, dstfd, offset, srcSize, dstSize){
 
 		var count = Math.ceil(srcSize/ (BDB-32));								// loof count == used block 
 		var start = RHB + file.headerBitMapSize(dstSize) + file.bodyBitMapSize(dstSize) + file.headerSize(dstSize);
-
 		for(var index = 0; index < count ;index++){
 
 			(function(index, count){
@@ -18,20 +17,15 @@ function fileCopy(srcfd, dstfd, offset, srcSize, dstSize){
 					try{
 
 						if(index == count-1) resolve("done");
-
 						var sbuf = new Buffer(BDB-32);
 						var head = 0;
 						var tail = 0;
 
 						if(index != 0){
-
 							var head = start + (BDB*offset[index-1]);
-
 						}
 						if(index != count-1) {
-
 							var tail = start + (BDB*offset[index+1]);
-
 						}
 
 						var tmp = Buffer.concat([Buffer.concat([buffreverse(Buffer.from(file.byteSet(head.toString(16)),'hex'))],16),Buffer.concat([buffreverse(Buffer.from(file.byteSet(tail.toString(16)),'hex'))],16)],32);
@@ -39,23 +33,16 @@ function fileCopy(srcfd, dstfd, offset, srcSize, dstSize){
 					   
 					    var result = Buffer.concat([tmp,sbuf],BDB);
 					    fs.writeSync(dstfd ,result ,0, result.length, start + (BDB*offset[index]));
-
-
-
 					}
 					catch(err){
-
 						reject("fileCopy function error : ",index,err);
 					}
-
 				}, 60);
-
 			})(index,count);
-
 		}
 	});
-
 }
+
 function fileExtract(storage, unknownFile , unknownFileSize, unknownFileStart){
 
 
