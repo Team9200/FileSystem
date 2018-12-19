@@ -160,40 +160,23 @@ watcher = chokidar.watch('./storage', {persistent: true})
  watcher
     .on('add', function(path, stats) 
         { 
-		 	console.log('add',path);
-
 			var file =path.split("\\")[1];
 			var action = file.slice(0,4);
 		  	
 		  	if(file == "give"){
-
 		  		extract();
 		  		fs.unlinkSync(path);
 		  	}
 		  	else if(action == "give@"){
-
 		  		var hash = file.slice(5,32);
 		  		console.log(hash);
 		  		extractByHash(hash);
 		  		fs.unlinkSync(path);
-
 		  	}
 		  	else
 		  		recive(path);
 	        })
 
-    .on('change', function(path, stats) 
-        { 
-		 	console.log('change');
-        })
-    .on('unlink', function(path, stats) 
-		{
-		 	console.log('delete.');
-        })
-    .on('error', function(error) 
-        { 
-         console.log('chokidar watch error occurred ' + error);
-        })
     .on('ready', function() 
         { 
             console.log('Initial scan complete. Ready for changes.');
