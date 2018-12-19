@@ -31,7 +31,7 @@ function recive(unknownFileName){
 		var collector = uuid.v1();
 		var unknownFile = fs.openSync(unknownFileName,"r+");
 		var unknownFileSize = await file.getFileSize(unknownFileName);
-		var date = 1543123401002;
+		var date = new Date().getTime();
 		var needSpace = Math.ceil(unknownFileSize/((1024*1024)-32));
 
 		//////////////////////////////////////////////////////////////////////////////////////////////
